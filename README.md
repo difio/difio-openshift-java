@@ -38,7 +38,7 @@ or
 
         remote: Running .openshift/action_hooks/post_deploy
         remote: 
-        remote: Success, registered/updated application 416c208c-d212-4580-85fd-8aa207c8e2a1
+        remote: {"message": "Success, registered/updated application 202c430be88c425ea7b3f9e64d2c0483", "exit_code": 0}
 
 - That's it, you can now check your application statistics at http://www.dif.io
 
