@@ -1,0 +1,56 @@
+#!/bin/bash
+
+#####################################################################################
+#
+# Copyright (c) 2012, Alexander Todorov <atodorov@nospam.dif.io>
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+#
+#####################################################################################
+
+NAME="difio-openshift-java"
+VERSION="0.2"
+
+# NB: this string is proparly escaped for JSON compatibility
+DATA=`cat << EOF
+{"user_id" : $DIFIO_USER_ID,
+"app_name" : "$OPENSHIFT_GEAR_NAME",
+"app_uuid" : "$OPENSHIFT_GEAR_UUID",
+"app_type" : "$OPENSHIFT_GEAR_TYPE",
+"app_url" : "http://$OPENSHIFT_GEAR_DNS",
+"app_vendor" : 0,
+"pkg_type" : 300,
+"installed" : [
+EOF`
+
+cd $OPENSHIFT_REPO_DIR
+
+for line in `mvn dependency:list | grep "\[INFO\]    " | tr -s ' ' | cut -f2 -d' '`; do
+    if [ -n "$line" ]; then
+        name=`echo $line | cut -f1,2 -d:`
+        version=`echo $line | cut -f4 -d:`
+
+        DATA="$DATA{\"n\" : \"$name\", \"v\" : \"$version\"}, "
+    fi
+done
+
+DATA="$DATA{\"n\" : \"difio/$NAME\", \"v\" : \"$VERSION\", \"t\" : 2000}]}"
+
+curl https://difio-otb.rhcloud.com/application/register/ -XPOST --data-urlencode json_data="$DATA" -A "$NAME/$VERSION"
+
