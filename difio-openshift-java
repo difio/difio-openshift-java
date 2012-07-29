@@ -25,7 +25,7 @@
 #####################################################################################
 
 NAME="difio-openshift-java"
-VERSION="0.2"
+VERSION="0.3"
 
 # NB: this string is proparly escaped for JSON compatibility
 DATA=`cat << EOF

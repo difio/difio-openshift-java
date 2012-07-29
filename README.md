@@ -1,35 +1,34 @@
-Registration agent for Difio, preconfigured for OpenShift / PHP
-applications. 
+Registration agent for Difio, preconfigured for OpenShift / JBoss
+applications.
 
-It compiles a list of installed PEAR packages and sends it to http://www.dif.io.
+It compiles a list of installed Maven dependencies and sends it to http://www.dif.io.
 
 
-Installing on your OpenShift PHP application
+Installing on your OpenShift JBoss application
 --------------------------------------------
 
 - Create an account at http://www.dif.io
 
-- Create your PHP application in OpenShift
+- Create your JBoss application in OpenShift
 
-        rhc-create-app -a myapp -t php-5.3
+        rhc-create-app -a myapp -t jbosseap-6.0
 
-- Add dependencies to your application:
+or
 
-        cd myapp/
-        echo HTTP_Request2 >> deplist.txt
-        echo PEAR >> deplist.txt
-        echo pecl/json >> deplist.txt
+        rhc-create-app -a myapp -t jbossas-7
+
 
 - Download the registration script into your application
 
-        wget https://raw.github.com/difio/difio-openshift-php/master/difio-openshift.php -O .openshift/action_hooks/difio-openshift.php
-        chmod +x .openshift/action_hooks/difio-openshift.php
+        cd myapp/
+        wget https://raw.github.com/difio/difio-openshift-java/master/difio-openshift-java -O .openshift/action_hooks/difio-openshift-java
+        chmod +x .openshift/action_hooks/difio-openshift-java
 
 - Enable the registration script in `.openshift/action_hooks/post_deploy` and set your userID
 
         #!/bin/sh
         export DIFIO_USER_ID=YourUserID
-        $OPENSHIFT_REPO_DIR/.openshift/action_hooks/difio-openshift.php
+        $OPENSHIFT_REPO_DIR/.openshift/action_hooks/difio-openshift-java
 
 - Commit and push your application to OpenShift
 
@@ -48,6 +47,7 @@ Updating the registration agent
 
 - When a new version of the registration agent script is available simply overwrite your current one
 
-        wget https://raw.github.com/difio/difio-openshift-php/master/difio-openshift.php -O .openshift/action_hooks/difio-openshift.php
-        chmod +x .openshift/action_hooks/difio-openshift.php
-        git add . && git commit -m "updated to latest version of difio-openshift-php" && git push
+        cd myapp/
+        wget https://raw.github.com/difio/difio-openshift-java/master/difio-openshift-java -O .openshift/action_hooks/difio-openshift-java
+        chmod +x .openshift/action_hooks/difio-openshift-java
+        git add . && git commit -m "updated to latest version of difio-openshift-java" && git push
